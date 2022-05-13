@@ -298,6 +298,48 @@ void main() {
         );
       });
 
+      test('network without custom caching values', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        await controller.initialize();
+
+        expect(
+          fakeVideoPlayerPlatform.dataSources[0].uri,
+          'https://127.0.0.1',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSources[0].maxCacheSize,
+          100 * 1024 * 1024,
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSources[0].maxFileSize,
+          10 * 1024 * 1024,
+        );
+      });
+
+      test('network with custom caching values', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+          maxCacheSize: 1024,
+          maxFileSize: 2048,
+        );
+        await controller.initialize();
+
+        expect(
+          fakeVideoPlayerPlatform.dataSources[0].uri,
+          'https://127.0.0.1',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSources[0].maxCacheSize,
+          1024,
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSources[0].maxFileSize,
+          2048,
+        );
+      });
+
       test('init errors', () async {
         final VideoPlayerController controller = VideoPlayerController.network(
           'http://testing.com/invalid_url',
