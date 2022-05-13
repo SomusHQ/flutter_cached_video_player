@@ -37,6 +37,9 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
     String? uri;
     String? formatHint;
     Map<String, String> httpHeaders = <String, String>{};
+    int? maxCacheSize;
+    int? maxFileSize;
+
     switch (dataSource.sourceType) {
       case DataSourceType.asset:
         asset = dataSource.asset;
@@ -46,6 +49,8 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
         uri = dataSource.uri;
         formatHint = _videoFormatStringMap[dataSource.formatHint];
         httpHeaders = dataSource.httpHeaders;
+        maxCacheSize = dataSource.maxCacheSize;
+        maxFileSize = dataSource.maxFileSize;
         break;
       case DataSourceType.file:
         uri = dataSource.uri;
@@ -59,6 +64,8 @@ class AVFoundationVideoPlayer extends VideoPlayerPlatform {
       packageName: packageName,
       uri: uri,
       httpHeaders: httpHeaders,
+      maxCacheSize: maxCacheSize,
+      maxFileSize: maxFileSize,
       formatHint: formatHint,
     );
 

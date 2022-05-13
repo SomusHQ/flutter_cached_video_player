@@ -139,11 +139,13 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
   /// package and null otherwise.
   MiniController.asset(this.dataSource, {this.package})
       : dataSourceType = DataSourceType.asset,
+        maxCacheSize = null,
+        maxFileSize = null,
         super(VideoPlayerValue(duration: Duration.zero));
 
   /// Constructs a [MiniController] playing a video from obtained from
   /// the network.
-  MiniController.network(this.dataSource)
+  MiniController.network(this.dataSource, {this.maxCacheSize, this.maxFileSize})
       : dataSourceType = DataSourceType.network,
         package = null,
         super(VideoPlayerValue(duration: Duration.zero));
@@ -153,6 +155,8 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
       : dataSource = 'file://${file.path}',
         dataSourceType = DataSourceType.file,
         package = null,
+        maxCacheSize = null,
+        maxFileSize = null,
         super(VideoPlayerValue(duration: Duration.zero));
 
   /// The URI to the video file. This will be in different formats depending on
@@ -165,6 +169,12 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
 
   /// Only set for [asset] videos. The package that the asset was loaded from.
   final String? package;
+
+  /// Only set for [network] videos. The maximum size of the cache.
+  final int? maxCacheSize;
+
+  /// Only set for [network] videos. The maximum size of the video file.
+  final int? maxFileSize;
 
   Timer? _timer;
   Completer<void>? _creatingCompleter;
@@ -197,6 +207,8 @@ class MiniController extends ValueNotifier<VideoPlayerValue> {
         dataSourceDescription = DataSource(
           sourceType: DataSourceType.network,
           uri: dataSource,
+          maxFileSize: maxFileSize,
+          maxCacheSize: maxCacheSize,
         );
         break;
       case DataSourceType.file:

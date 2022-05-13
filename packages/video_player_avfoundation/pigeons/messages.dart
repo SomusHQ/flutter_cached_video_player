@@ -50,6 +50,8 @@ class CreateMessage {
   String? packageName;
   String? formatHint;
   Map<String?, String?> httpHeaders;
+  int? maxCacheSize;
+  int? maxFileSize;
 }
 
 class MixWithOthersMessage {

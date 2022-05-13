@@ -139,6 +139,8 @@ class CreateMessage {
     this.packageName,
     this.formatHint,
     required this.httpHeaders,
+    this.maxCacheSize,
+    this.maxFileSize,
   });
 
   String? asset;
@@ -146,6 +148,8 @@ class CreateMessage {
   String? packageName;
   String? formatHint;
   Map<String?, String?> httpHeaders;
+  int? maxCacheSize;
+  int? maxFileSize;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -154,6 +158,8 @@ class CreateMessage {
     pigeonMap['packageName'] = packageName;
     pigeonMap['formatHint'] = formatHint;
     pigeonMap['httpHeaders'] = httpHeaders;
+    pigeonMap['maxCacheSize'] = maxCacheSize;
+    pigeonMap['maxFileSize'] = maxFileSize;
     return pigeonMap;
   }
 
@@ -166,6 +172,8 @@ class CreateMessage {
       formatHint: pigeonMap['formatHint'] as String?,
       httpHeaders: (pigeonMap['httpHeaders'] as Map<Object?, Object?>?)!
           .cast<String?, String?>(),
+      maxCacheSize: pigeonMap['maxCacheSize'] as int?,
+      maxFileSize: pigeonMap['maxFileSize'] as int?,
     );
   }
 }

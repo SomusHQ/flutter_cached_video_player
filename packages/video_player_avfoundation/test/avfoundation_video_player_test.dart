@@ -164,6 +164,26 @@ void main() {
       expect(textureId, 3);
     });
 
+    test('create with network (custom max cache and file size)', () async {
+      final int? textureId = await player.create(DataSource(
+        sourceType: DataSourceType.network,
+        uri: 'someUri',
+        httpHeaders: <String, String>{'Authorization': 'Bearer token'},
+        maxCacheSize: 1024,
+        maxFileSize: 3600,
+      ));
+      expect(log.log.last, 'create');
+      expect(log.createMessage?.asset, null);
+      expect(log.createMessage?.uri, 'someUri');
+      expect(log.createMessage?.packageName, null);
+      expect(log.createMessage?.formatHint, null);
+      expect(log.createMessage?.httpHeaders,
+          <String, String>{'Authorization': 'Bearer token'});
+      expect(log.createMessage?.maxCacheSize, 1024);
+      expect(log.createMessage?.maxFileSize, 3600);
+      expect(textureId, 3);
+    });
+
     test('create with file', () async {
       final int? textureId = await player.create(DataSource(
         sourceType: DataSourceType.file,
