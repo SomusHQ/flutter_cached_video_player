@@ -128,6 +128,8 @@ class DataSource {
     this.asset,
     this.package,
     this.httpHeaders = const <String, String>{},
+    this.maxCacheSize,
+    this.maxFileSize,
   });
 
   /// The way in which the video was originally loaded.
@@ -157,6 +159,14 @@ class DataSource {
   /// The package that the asset was loaded from. Only set for
   /// [DataSourceType.asset] videos.
   final String? package;
+
+  /// The maximum size of the cache. Only set for [DataSourceType.network]
+  /// videos.
+  final int? maxCacheSize;
+
+  /// The maximum size of the file. Only set for [DataSourceType.network]
+  /// videos.
+  final int? maxFileSize;
 }
 
 /// The way in which the video was originally loaded.
