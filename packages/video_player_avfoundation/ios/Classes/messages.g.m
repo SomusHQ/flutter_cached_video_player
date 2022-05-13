@@ -176,13 +176,17 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
                           uri:(nullable NSString *)uri
                   packageName:(nullable NSString *)packageName
                    formatHint:(nullable NSString *)formatHint
-                  httpHeaders:(NSDictionary<NSString *, NSString *> *)httpHeaders {
+                  httpHeaders:(NSDictionary<NSString *, NSString *> *)httpHeaders
+                 maxCacheSize:(nullable NSNumber *)maxCacheSize
+                  maxFileSize:(nullable NSNumber *)maxFileSize {
   FLTCreateMessage *pigeonResult = [[FLTCreateMessage alloc] init];
   pigeonResult.asset = asset;
   pigeonResult.uri = uri;
   pigeonResult.packageName = packageName;
   pigeonResult.formatHint = formatHint;
   pigeonResult.httpHeaders = httpHeaders;
+  pigeonResult.maxCacheSize = maxCacheSize;
+  pigeonResult.maxFileSize = maxFileSize;
   return pigeonResult;
 }
 + (FLTCreateMessage *)fromMap:(NSDictionary *)dict {
@@ -192,6 +196,8 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
   pigeonResult.packageName = GetNullableObject(dict, @"packageName");
   pigeonResult.formatHint = GetNullableObject(dict, @"formatHint");
   pigeonResult.httpHeaders = GetNullableObject(dict, @"httpHeaders");
+  pigeonResult.maxCacheSize = GetNullableObject(dict, @"maxCacheSize");
+  pigeonResult.maxFileSize = GetNullableObject(dict, @"maxFileSize");
   NSAssert(pigeonResult.httpHeaders != nil, @"");
   return pigeonResult;
 }
@@ -204,7 +210,11 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
                                    (self.formatHint ? self.formatHint : [NSNull null]),
                                    @"formatHint",
                                    (self.httpHeaders ? self.httpHeaders : [NSNull null]),
-                                   @"httpHeaders", nil];
+                                   @"httpHeaders",
+                                   (self.maxCacheSize ? self.maxCacheSize : [NSNull null]),
+                                   @"maxCacheSize",
+                                   (self.maxFileSize ? self.maxFileSize : [NSNull null]),
+                                   @"maxFileSize", nil];
 }
 @end
 

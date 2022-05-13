@@ -65,12 +65,16 @@ NS_ASSUME_NONNULL_BEGIN
                           uri:(nullable NSString *)uri
                   packageName:(nullable NSString *)packageName
                    formatHint:(nullable NSString *)formatHint
-                  httpHeaders:(NSDictionary<NSString *, NSString *> *)httpHeaders;
+                  httpHeaders:(NSDictionary<NSString *, NSString *> *)httpHeaders
+                 maxCacheSize:(nullable NSNumber *)maxCacheSize
+                  maxFileSize:(nullable NSNumber *)maxCacheSize;
 @property(nonatomic, copy, nullable) NSString *asset;
 @property(nonatomic, copy, nullable) NSString *uri;
 @property(nonatomic, copy, nullable) NSString *packageName;
 @property(nonatomic, copy, nullable) NSString *formatHint;
 @property(nonatomic, strong) NSDictionary<NSString *, NSString *> *httpHeaders;
+@property(nonatomic, nullable) NSNumber *maxCacheSize;
+@property(nonatomic, nullable) NSNumber *maxFileSize;
 @end
 
 @interface FLTMixWithOthersMessage : NSObject

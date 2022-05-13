@@ -6,6 +6,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <GLKit/GLKit.h>
+#import "VIMediaCache.h"
 
 #import "AVAssetTrackUtils.h"
 #import "messages.g.h"
@@ -46,7 +47,10 @@
 @property(nonatomic, readonly) BOOL isInitialized;
 - (instancetype)initWithURL:(NSURL *)url
                frameUpdater:(FLTFrameUpdater *)frameUpdater
-                httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers;
+                httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers
+               maxCacheSize:(NSNumber *)maxCacheSize
+                maxFileSize:(NSNumber *)maxFileSize;
++ (VIResourceLoaderManager*)resourceLoaderManager;
 @end
 
 static void *timeRangeContext = &timeRangeContext;
@@ -60,7 +64,7 @@ static void *playbackBufferFullContext = &playbackBufferFullContext;
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString *)asset frameUpdater:(FLTFrameUpdater *)frameUpdater {
   NSString *path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
-  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater httpHeaders:@{}];
+  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater httpHeaders:@{} maxCacheSize:nil maxFileSize:nil];
 }
 
 - (void)addObservers:(AVPlayerItem *)item {
@@ -180,14 +184,34 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
 
 - (instancetype)initWithURL:(NSURL *)url
                frameUpdater:(FLTFrameUpdater *)frameUpdater
-                httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers {
+                httpHeaders:(nonnull NSDictionary<NSString *, NSString *> *)headers
+               maxCacheSize:(NSNumber *)maxCacheSize
+                maxFileSize:(NSNumber *)maxFileSize {
   NSDictionary<NSString *, id> *options = nil;
   if ([headers count] != 0) {
     options = @{@"AVURLAssetHTTPHeaderFieldsKey" : headers};
   }
-  AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:url options:options];
-  AVPlayerItem *item = [AVPlayerItem playerItemWithAsset:urlAsset];
+  AVPlayerItem* item;
+  BOOL enableCache = maxCacheSize != nil && maxFileSize != nil;
+
+  if (enableCache) {
+    // VIMediaCache doesn't actually have `playItemWithAsset`, so we have to use
+    // the URL here.
+    item = [[FLTVideoPlayer resourceLoaderManager] playerItemWithURL:url];
+  } else {
+    AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:url options:options];
+    item = [AVPlayerItem playerItemWithAsset:urlAsset];
+  }
+
   return [self initWithPlayerItem:item frameUpdater:frameUpdater];
+}
+
++ (VIResourceLoaderManager*)resourceLoaderManager {
+  static VIResourceLoaderManager* resourceLoaderManager = nil;
+  if (resourceLoaderManager == nil) {
+    resourceLoaderManager = [VIResourceLoaderManager new];
+  }
+  return resourceLoaderManager;
 }
 
 - (instancetype)initWithPlayerItem:(AVPlayerItem *)item
@@ -555,7 +579,9 @@ NS_INLINE CGFloat radiansToDegrees(CGFloat radians) {
   } else if (input.uri) {
     player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:input.uri]
                                     frameUpdater:frameUpdater
-                                     httpHeaders:input.httpHeaders];
+                                     httpHeaders:input.httpHeaders
+                                    maxCacheSize:input.maxCacheSize
+                                     maxFileSize:input.maxFileSize];
     return [self onPlayerSetup:player frameUpdater:frameUpdater];
   } else {
     *error = [FlutterError errorWithCode:@"video_player" message:@"not implemented" details:nil];
